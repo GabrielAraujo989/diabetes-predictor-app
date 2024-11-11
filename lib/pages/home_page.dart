@@ -1,5 +1,8 @@
+// lib/pages/home_page.dart
+
 import 'package:flutter/material.dart';
-import 'questionnaire_page.dart';
+import 'package:test_diabetic/themes.dart'; // Importação correta
+import 'package:test_diabetic/pages/questionnaire_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -9,21 +12,26 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("App Diabetes Predictor"),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               "Descubra suas chances de desenvolver diabetes!",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                    color: AppColors.textColor, // Cor preta
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               "Este app faz perguntas rápidas e analisa suas respostas para prever suas chances de desenvolver diabetes.",
-              style: TextStyle(fontSize: 16),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppColors.textColor, // Cor preta
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
@@ -35,11 +43,13 @@ class HomePage extends StatelessWidget {
                       builder: (context) => const QuestionnairePage()),
                 );
               },
-              child: const Text("INICIAR"),
               style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                textStyle: const TextStyle(fontSize: 18),
+                textStyle: AppTextStyles.buttonText, // Texto branco
+                minimumSize: const Size(double.infinity, 50), // Largura total
+              ),
+              child: const Text(
+                "INICIAR",
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],

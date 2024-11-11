@@ -1,8 +1,13 @@
+// lib/main.dart
+
 import 'package:flutter/material.dart';
-import 'pages/home_page.dart';
-import 'pages/questionnaire_page.dart';
-import 'pages/resultquestion_page.dart';
-import 'pages/satisfactionsurvey_page.dart';
+import 'package:test_diabetic/pages/home_page.dart';
+import 'package:test_diabetic/pages/questionnaire_page.dart';
+import 'package:test_diabetic/pages/resultquestion_page.dart';
+import 'package:test_diabetic/pages/satisfactionsurvey_page.dart';
+import 'package:test_diabetic/pages/loading_screen.dart'; // Corrigido para a convenção de nomenclatura
+import 'package:test_diabetic/main_navigation.dart'; // Corrigido para a convenção de nomenclatura
+import 'package:test_diabetic/themes.dart'; // Importação correta do themes.dart
 
 void main() {
   runApp(const MyApp());
@@ -13,62 +18,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 0;
-
-  final List<Widget> _pages = [
-    const HomePage(),
-    const QuestionnairePage(),
-    const ResultQuestionPage(),
-    const SatisfactionSurveyPage(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.quiz),
-            label: 'Questionário',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assessment),
-            label: 'Resultado',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.feedback),
-            label: 'Satisfação',
-          ),
-        ],
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-      ),
+    return MaterialApp(
+      title: 'Diabetes Detector',
+      theme: AppThemes.getThemeData(),
+      initialRoute: '/', // Definir a rota inicial como '/'
+      routes: {
+        '/': (context) => const LoadingScreen(),
+        '/main': (context) => const MainNavigation(),
+        '/home': (context) =>
+            const MainNavigation(), // Rota '/home' aponta para MainNavigation
+        '/questionnaire': (context) => const QuestionnairePage(),
+        '/result': (context) => ResultQuestionPage(
+              answersResponses:
+                  ModalRoute.of(context)?.settings.arguments as List<int>? ??
+                      [],
+            ),
+        '/satisfaction': (context) => const SatisfactionSurveyPage(),
+      },
+      debugShowCheckedModeBanner: false, // Remover o banner de debug
     );
   }
 }
