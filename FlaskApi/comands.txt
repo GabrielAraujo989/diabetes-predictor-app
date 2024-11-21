@@ -1,0 +1,3 @@
+venv\Scripts\activate 
+python DiabeticApi.py (inicia projeto)
+ngrok http 8085 ou ngrok http -auth"gabriel:pi5DSM2024" 8085

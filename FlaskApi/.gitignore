@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.env
+venv/
+env/
+instance/
+.webassets-cache
+.DS_Store
+models\RandomForest_model.pkl
