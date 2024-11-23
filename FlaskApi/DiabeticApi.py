@@ -34,55 +34,29 @@ FEATURE_NAMES = [
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Obter os dados do JSON recebido
-        data = request.get_json(force=True)
+        # Verificar o formato da entrada
+        data = request.get_json()
+        if not isinstance(data, list) or len(data) != len(FEATURE_NAMES):
+            return jsonify({"error": f"Dados de entrada inválidos. Deve ser uma lista com {len(FEATURE_NAMES)} valores numéricos."}), 400
 
-        # Função para processar e prever a partir de um DataFrame
-        def process_prediction(input_df):
-            # Aplicar padronização e PCA
-            scaled_data = scaler.transform(input_df)
-            reduced_data = pca.transform(scaled_data)
+        # Converter para DataFrame
+        input_df = pd.DataFrame([data], columns=FEATURE_NAMES)
 
-            # Fazer a predição
-            prediction = model.predict(reduced_data)
+        # Aplicar padronização e PCA
+        scaled_data = scaler.transform(input_df)
+        reduced_data = pca.transform(scaled_data)
 
-            # Interpretar a previsão
-            resultado = ['com diabetes' if pred == 1 else 'sem diabetes' for pred in prediction]
-            return resultado
+        # Fazer a predição
+        prediction = model.predict(reduced_data)[0]
 
-        # Verificar se a entrada é uma lista de listas ou uma única lista
-        if isinstance(data, list):
-            if all(isinstance(item, list) for item in data):
-                # Múltiplos conjuntos de dados
-                if not all(len(item) == len(FEATURE_NAMES) for item in data):
-                    return jsonify({"error": f"Todos os conjuntos de entrada devem ter {len(FEATURE_NAMES)} valores numéricos."}), 400
+        # Converter o resultado para uma mensagem legível
+        result = "com diabetes" if prediction == 1 else "sem diabetes"
 
-                input_df = pd.DataFrame(data, columns=FEATURE_NAMES)
-                resultados = process_prediction(input_df)
-                return jsonify({"predictions": resultados}), 200
-
-            else:
-                # Único conjunto de dados
-                if len(data) != len(FEATURE_NAMES):
-                    return jsonify({"error": f"Dados de entrada inválidos. Deve ser uma lista com {len(FEATURE_NAMES)} valores numéricos."}), 400
-
-                input_df = pd.DataFrame([data], columns=FEATURE_NAMES)
-                resultado = process_prediction(input_df)[0]
-                return jsonify({"prediction": resultado}), 200
-
-        else:
-            return jsonify({"error": "Formato de dados inválido. Envie uma lista ou uma lista de listas."}), 400
+        return jsonify({"prediction": result}), 200
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": f"Erro ao processar a solicitação: {e}"}), 500
 
-# Rota de teste para verificar se a API está funcionando
-@app.route('/', methods=['GET'])
-def home():
-    return "API Diabetic Predictor está funcionando!"
-
-#if __name__ == '__main__':
-#    app.run(debug=False)
 # Iniciar o servidor
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("FLASK_PORT", 8085)))
